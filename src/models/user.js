@@ -1,5 +1,5 @@
 const { Mongoose, default: mongoose } = require("mongoose")
-const {validator} = require("validator")
+const validator = require("validator")
 
 const userSchema = new mongoose.Schema({
     firstName : {
@@ -13,15 +13,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         unique: true,
         trim: true,
-        validate(value){
-            if(!validator.isEmail(value)) throw new Error("Invalid Emaild Id : " + value);
-        }
+       
     },
     password : {
         type: String,
-        validate(value){
-            if(!validator.isStrongPassword(value)) throw new Error("Weak Password " + value);
-        }
+        // validate(value){
+        //     if(!validator.isStrongPassword(value)) throw new Error("Weak Password " + value);
+        // }
     },
     gender : {
         type: String,

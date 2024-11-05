@@ -6,16 +6,23 @@
  const {adminAuth} = require("./middlewares/auth")
  const User = require("./models/user");
  const {validateSignUpData} = require("./utils/validation")
+ const bcrypt = require("bcrypt");
 
 
 app.use(express.json());
 
 app.post("/signup", async (req,res) => {
 
-   //Validation of data
-   validateSignUpData(req);
+   try{
+      
+      //Validation of data
+      validateSignUpData(req);
 
-   const user = new User(req.body);
+      const {firstName, lastName, email, password} = req.body;
+      // Encrypt the password
+      const passwordHash = await bcrypt.hash(password, 10);
+
+      const user = new User({firstName, lastName, email, password : passwordHash});
    // const user = new User({
    //    firstName : "Tary",
    //    lastName : "Saini",
@@ -23,11 +30,31 @@ app.post("/signup", async (req,res) => {
    //    password : "Taru@123",
    // });
 
-   try{
       await user.save();
       res.send("User Added Successfully");
+
    } catch(err){
-      res.status(400).send("Error Sending the user data" + err.message);
+      res.status(400).send("Error : " + err.message);
+   }
+})
+
+
+app.post("/login", async (req,res) => {
+
+   try{
+      
+      const {email, password} = req.body;
+      const user = await User.findOne({email:email});
+
+      if(!user) {throw new Error("Invalid Credentials");}
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if(isPasswordValid) {res.send("Login Successfull");}
+      else {throw new Error("Invalid Credentials");}
+
+   } catch(err){
+      res.status(400).send("Error : " + err.message);
    }
 })
 
