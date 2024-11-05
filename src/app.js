@@ -5,11 +5,15 @@
  const {connectDB} = require("./config/database")
  const {adminAuth} = require("./middlewares/auth")
  const User = require("./models/user");
+ const {validateSignUpData} = require("./utils/validation")
 
 
 app.use(express.json());
 
 app.post("/signup", async (req,res) => {
+
+   //Validation of data
+   validateSignUpData(req);
 
    const user = new User(req.body);
    // const user = new User({
@@ -43,12 +47,20 @@ app.get("/user", async (req,res) => {
    }
 });
 
-app.patch("/user", async (req,res) => {
-   const id = req.body.userId;
+app.patch("/user/:userId", async (req,res) => {
+   const userId = req?.params.userId;
+   const data = req.body;
    // const name = req.body.firstname;
 
    try{
-      const updatedUser = await User.findOneAndUpdate({_id:id}, req.body)
+      const ALLOW_UPDATES = ["About", "Gender", "Skills"];
+      const isUpdateAllowed = Object.keys(data).every((k) => ALLOW_UPDATES.includes(k));
+
+      if(!isUpdateAllowed) {throw new Error("Update not Allowed");}
+
+      if(data?.skills.length>10){throw new Error("Skills Cannot be more then 10")}
+
+      const updatedUser = await User.findOneAndUpdate({_id:userId}, data, {runValidators:true,});
       // const updatedUser = await User.findOneAndUpdate({firstName:name}, {firstName:"Taru"})
       console.log(updatedUser);
       res.send("User Updated");
