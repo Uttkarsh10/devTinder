@@ -3,13 +3,17 @@
  const app = express();
 
  const {connectDB} = require("./config/database")
- const {adminAuth} = require("./middlewares/auth")
+ const {userAuth} = require("./middlewares/auth")
  const User = require("./models/user");
  const {validateSignUpData} = require("./utils/validation")
  const bcrypt = require("bcrypt");
+ const cookieParser = require("cookie-parser");
+ const jwt = require("jsonwebtoken")
 
 
 app.use(express.json());
+app.use(cookieParser())
+
 
 app.post("/signup", async (req,res) => {
 
@@ -50,11 +54,41 @@ app.post("/login", async (req,res) => {
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
-      if(isPasswordValid) {res.send("Login Successfull");}
+      if(isPasswordValid) {
+
+         //Create a jwt token
+         const token = await jwt.sign({_id:user._id}, "devTinder@10");
+         console.log(token);
+
+         res.cookie("token" , token);
+         res.send("Login Successfull");
+      }
+
       else {throw new Error("Invalid Credentials");}
 
    } catch(err){
-      res.status(400).send("Error : " + err.message);
+      res.status(400).send("Error : " + err);
+   }
+})
+
+app.get("/profile", userAuth, async(req,res) => {
+
+   try {
+      const user = req.user;
+      res.send(user)
+   } catch (error) {
+      res.status(400).send("Error : " + err);
+   }
+})
+
+
+app.post("/sendConnectionRequest", userAuth, async(req,res) => {
+
+   try {
+      console.log("connection request")
+      res.send("Connection Request Sent")
+   } catch (error) {
+      res.status(400).send("Error : " + err);
    }
 })
 
