@@ -9,4 +9,13 @@ const validateSignUpData = (req) => {
     else if(!validator.isStrongPassword(password)) {throw new Error("Password is Weak")}
 }
 
-module.exports = {validateSignUpData};
+
+const validateEditProfileData = (req) => {
+    const allowedEditFields = ["firstname", "lastname", "emailId", "gender", "age", "about", "skills"];
+
+    const isEditAllowed = Object.keys(req.body).every((field) => allowedEditFields.includes(field));
+
+    return isEditAllowed;
+}
+
+module.exports = {validateSignUpData, validateEditProfileData};
