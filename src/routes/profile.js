@@ -38,4 +38,7 @@ profileRouter.get("/profile", userAuth, async(req,res) => {
  })
 
 
+ //Add a password edit api, Also try to set a time frequency (say user should get password update reminder every 6 months)
+
+
  module.exports = profileRouter;
