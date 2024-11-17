@@ -52,10 +52,9 @@ authRouter.post("/signup", async (req,res) => {
           //Create a jwt token
           // const token = await jwt.sign({_id:user._id}, "devTinder@10", {expiresIn: "7d"});
           const token = await user.getJWT();
-          console.log(token);
  
           res.cookie("token" , token, {expires: new Date(Date.now() + 8*3600000)});
-          res.send("Login Successfull");
+          res.send(user);
        }
  
        else {throw new Error("Invalid Credentials");}
