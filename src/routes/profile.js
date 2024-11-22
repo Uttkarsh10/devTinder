@@ -33,7 +33,7 @@ profileRouter.get("/profile", userAuth, async(req,res) => {
         })
 
     } catch (error) {
-        res.status(400).send("Error : " + err);
+        res.status(400).send("Error : " + error);
     }
  })
 

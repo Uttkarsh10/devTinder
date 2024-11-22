@@ -30,9 +30,13 @@ const userSchema = new mongoose.Schema({
             if(!["Male", "Female", "Others"].includes(value)) throw new Error("Invalid Gender " + value);
         }
     },
+    photoURL: {
+        type: String,
+        default: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png",
+    },
     age : {
         type : Number,
-        min : 18
+        min : 1
     },
 
     about : {

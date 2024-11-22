@@ -8,7 +8,7 @@ userRouter.get("/user/requests/recieved", userAuth, async(req,res) => {
     
     try {
         const loggedInUser = req.user;
-        const connectionRequest = await ConnectionRequest.find({recieverUserID: loggedInUser._id, status: "Interested"}).populate("senderUserID", ["firstName", "lastName", "about", "skills"]); 
+        const connectionRequest = await ConnectionRequest.find({recieverUserID: loggedInUser._id, status: "Interested"}).populate("senderUserID", ["firstName", "lastName", "about", "age", "gender", "skills"]); 
         res.json({
             message : "Data Fetched Successfully",
             data : connectionRequest,
@@ -29,7 +29,7 @@ userRouter.get("/user/connections", userAuth, async(req,res) => {
                 {senderUserID : loggedInUser._id, status : "Accepted"},
                 {recieverUserID : loggedInUser._id, status : "Accepted"}
             ]
-        }).populate("senderUserID", ["firstName", "lastName", "about", "skills"]).populate("recieverUserID", ["firstName", "lastName", "about", "skills"])
+        }).populate("senderUserID", ["firstName", "lastName", "about", "age", "gender", "skills", "photoURL"]).populate("recieverUserID", ["firstName", "lastName", "about", "age", "gender", "skills", "photoURL"])
 
         const data = connectionRequest.map((data) => {
             if(data.senderUserID._id.equals(loggedInUser._id)) return data.recieverUserID;
@@ -76,7 +76,7 @@ userRouter.get("/feed", userAuth, async(req,res) => {
                 {_id : {$nin : Array.from(hideProfiles)}},
                 {_id : {$ne : loggedInUser._id}},
             ]
-        }).select(["firstName", "lastName", "about", "skills"]).skip(skip).limit(limit);
+        }).select(["firstName", "lastName", "about", "age", "gender", "skills", "photoURL"]).skip(skip).limit(limit);
 
         res.send(feedProfiles);
 
